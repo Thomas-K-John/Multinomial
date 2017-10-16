@@ -1,0 +1,74 @@
+---
+title: "Untitled"
+author: "Thomas K John"
+date: "August 9, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Clearing the environmnets
+```{r}
+rm(list = ls(all = TRUE))
+setwd("I:/DATA-SCIENCE/Insofe/Assignments/Multinominal")
+```
+# Loading the file
+```{r}
+cardio.data = read.csv(file = "Cardiotocographic.csv", header = TRUE, sep = ",", na.strings = c(NA,"") )
+```
+
+#Summary
+```{r}
+str(cardio.data)
+summary(cardio.data)
+cardio.data$NSP =  as.factor(cardio.data$NSP)
+```
+# Split the data
+```{r}
+library(caret)
+set.seed(123)
+train.rows = createDataPartition(cardio.data$NSP, p =0.7 , list = FALSE)
+train.data = cardio.data[train.rows,]
+test.data = cardio.data[-train.rows,]
+
+```
+
+```{r}
+library(nnet)
+train.data$out = relevel(train.data$NSP, ref="1")
+multinom_model = multinom(formula = out ~ LB + AC + FM + UC + DL + ASTV + MSTV + 
+    ALTV + Width + Min + Max + Nmax + Nzeros + Mode + Mean + 
+    Median + Variance + Tendency, data = train.data)
+summary(multinom_model)
+pred_result = predict(multinom_model, train.data)
+#Or
+pred_result = predict(multinom_model, train.data, type = "prob")
+head(pred_result)
+confusionMatrix = table(predict(multinom_model), train.data$NSP)
+confusionMatrix
+```
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
